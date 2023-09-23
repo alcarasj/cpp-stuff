@@ -23,7 +23,7 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include <grpcpp/grpcpp.h>
-#include "helloworld.grpc.pb.h"
+#include "./protos/helloworld.grpc.pb.h"
 
 ABSL_FLAG(std::string, target, "localhost:50051", "Server address");
 

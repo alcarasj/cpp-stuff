@@ -17,3 +17,9 @@ This must be done before building the server and client. Make sure `cmake` and t
 2. Set the CMake install directory with `export MY_INSTALL_DIR=$HOME/.local`
 3. Generate the Makefile with `cmake -DCMAKE_PREFIX_PATH=$MY_INSTALL_DIR .`
 4. Make the server and client with `make -j 4`
+5. Run the server with `./server`
+6. Run the client with `./client`
+### Building the server Docker image
+1. Build the server and client as normal.
+2. `docker build . -t alcarasj/cpp-stuff`
+3. `docker run -p 50051:50051 alcarasj/cpp-stuff:latest`
