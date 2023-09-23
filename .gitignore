@@ -41,3 +41,6 @@
 **/*.cbp
 **/CMakeScripts
 **/compile_commands.json
+
+bin/
+lib/
