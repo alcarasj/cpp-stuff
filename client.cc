@@ -1,21 +1,3 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 #include <iostream>
 #include <memory>
 #include <string>
@@ -23,21 +5,24 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include <grpcpp/grpcpp.h>
-#include "./protos/helloworld.grpc.pb.h"
+#include "./protos/cppstuff.grpc.pb.h"
+#include "parking.h"
 
 ABSL_FLAG(std::string, target, "localhost:50051", "Server address");
 
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
-using helloworld::Greeter;
-using helloworld::HelloReply;
-using helloworld::HelloRequest;
+using cppstuff::CppStuff;
+using cppstuff::HelloReply;
+using cppstuff::HelloRequest;
+using cppstuff::CarParkStatusRequest;
+using cppstuff::CarParkStatusResponse;
 
-class GreeterClient {
+class CppStuffClient {
  public:
-  GreeterClient(std::shared_ptr<Channel> channel)
-      : stub_(Greeter::NewStub(channel)) {}
+  CppStuffClient(std::shared_ptr<Channel> channel)
+      : stub_(CppStuff::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
@@ -66,8 +51,25 @@ class GreeterClient {
     }
   }
 
+  CarParkStatusResponse GetCarParkStatus(const std::string& name) {
+    CarParkStatusRequest request;
+    request.set_name(name);
+    CarParkStatusResponse response;
+    ClientContext context;
+
+    Status status = stub_->GetCarParkStatus(&context, request, &response);
+
+    if (status.ok()) {
+      return response;
+    } else {
+      std::cout << status.error_code() << ": " << status.error_message()
+                << std::endl;
+      throw std::runtime_error("RPC failed");
+    }
+  }
+
  private:
-  std::unique_ptr<Greeter::Stub> stub_;
+  std::unique_ptr<CppStuff::Stub> stub_;
 };
 
 int main(int argc, char** argv) {
@@ -78,11 +80,15 @@ int main(int argc, char** argv) {
   std::string target_str = absl::GetFlag(FLAGS_target);
   // We indicate that the channel isn't authenticated (use of
   // InsecureChannelCredentials()).
-  GreeterClient greeter(
-      grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
-  std::string user("world");
-  std::string reply = greeter.SayHello(user);
-  std::cout << "Greeter received: " << reply << std::endl;
+  CppStuffClient cppStuffClient = grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials());
+  
+  std::string user("YOLOSWAG");
+  std::string reply = cppStuffClient.SayHello(user);
+  std::cout << "SayHello received: " << reply << std::endl;
+
+  std::string name("omp");
+  CarParkStatusResponse response = cppStuffClient.GetCarParkStatus(name);
+  std::cout << "GetCarParkStatus received for \"" << name << "\" car park: " << response.vacancies() << " out of " << response.capacity() << " free." << std::endl;
 
   return 0;
 }

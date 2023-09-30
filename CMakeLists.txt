@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.27.6)
 project (cpp-stuff)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -33,14 +34,14 @@ else()
 endif()
 
 # Proto file
-get_filename_component(hw_proto "./protos/helloworld.proto" ABSOLUTE)
+get_filename_component(hw_proto "./protos/cppstuff.proto" ABSOLUTE)
 get_filename_component(hw_proto_path "${hw_proto}" PATH)
 
 # Generated sources
-set(hw_proto_srcs "${CMAKE_BINARY_DIR}/protos/helloworld.pb.cc")
-set(hw_proto_hdrs "${CMAKE_BINARY_DIR}/protos/helloworld.pb.h")
-set(hw_grpc_srcs "${CMAKE_BINARY_DIR}/protos/helloworld.grpc.pb.cc")
-set(hw_grpc_hdrs "${CMAKE_BINARY_DIR}/protos/helloworld.grpc.pb.h")
+set(hw_proto_srcs "${CMAKE_BINARY_DIR}/protos/cppstuff.pb.cc")
+set(hw_proto_hdrs "${CMAKE_BINARY_DIR}/protos/cppstuff.pb.h")
+set(hw_grpc_srcs "${CMAKE_BINARY_DIR}/protos/cppstuff.grpc.pb.cc")
+set(hw_grpc_hdrs "${CMAKE_BINARY_DIR}/protos/cppstuff.grpc.pb.h")
 add_custom_command(
       OUTPUT "${hw_proto_srcs}" "${hw_proto_hdrs}" "${hw_grpc_srcs}" "${hw_grpc_hdrs}"
       COMMAND ${_PROTOBUF_PROTOC}
@@ -62,6 +63,12 @@ target_link_libraries(hw_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
 
+add_library(
+  parking 
+  ${CMAKE_SOURCE_DIR}/parking.cc
+)
+target_include_directories(parking PUBLIC ${CMAKE_SOURCE_DIR}/include)
+
 foreach(_target server client)
   add_executable(${_target} "${_target}.cc")
   target_link_libraries(${_target}
@@ -70,5 +77,7 @@ foreach(_target server client)
     absl::flags_parse
     ${_REFLECTION}
     ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF})
+    ${_PROTOBUF_LIBPROTOBUF}
+    parking
+  )
 endforeach()

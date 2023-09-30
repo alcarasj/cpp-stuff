@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "alcarasj.cppstuff";
+option java_outer_classname = "CppStuffProto";
+option objc_class_prefix = "CPPS";
+
+package cppstuff;
+
+// The greeting service definition.
+service CppStuff {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  rpc GetCarParkStatus (CarParkStatusRequest) returns (CarParkStatusResponse) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+
+message CarParkStatusRequest {
+  string name = 1;
+}
+
+message CarParkStatusResponse {
+  int32 capacity = 1;
+  int32 vacancies = 2;
+}

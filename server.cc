@@ -1,21 +1,3 @@
-/*
- *
- * Copyright 2015 gRPC authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 #include <iostream>
 #include <memory>
 #include <string>
@@ -27,32 +9,45 @@
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
 #include <grpcpp/health_check_service_interface.h>
-#include "./protos/helloworld.grpc.pb.h"
+#include "./protos/cppstuff.grpc.pb.h"
+#include "parking.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using helloworld::Greeter;
-using helloworld::HelloReply;
-using helloworld::HelloRequest;
+using cppstuff::CppStuff;
+using cppstuff::HelloReply;
+using cppstuff::HelloRequest;
+using cppstuff::CarParkStatusRequest;
+using cppstuff::CarParkStatusResponse;
 
 ABSL_FLAG(uint16_t, port, 50051, "Server port for the service");
 
 // Logic and data behind the server's behavior.
-class GreeterServiceImpl final : public Greeter::Service {
+class CppStuffServiceImpl final : public CppStuff::Service {
   Status SayHello(ServerContext* context, const HelloRequest* request,
                   HelloReply* reply) override {
     std::string prefix("Hello ");
-    std::cout << "Request received! Replied with \"" << prefix << request->name() << "\"" << std::endl;
+    std::cout << "SayHello request received, replying with \"" << prefix << request->name() << "\"" << std::endl;
     reply->set_message(prefix + request->name());
+    return Status::OK;
+  }
+
+  Status GetCarParkStatus(ServerContext* context, const CarParkStatusRequest* request,
+                  CarParkStatusResponse* response) override {
+    CarPark ompCarPark(250, request->name());
+    int vacancies = ompCarPark.getVacancies();
+    std::cout << "GetCarParkStatus request received for \"" << request->name() << "\" car park, replying with vacancies of " << vacancies << " and capacity of " << ompCarPark.capacity << std::endl;
+    response->set_capacity(ompCarPark.capacity);
+    response->set_vacancies(vacancies);
     return Status::OK;
   }
 };
 
 void RunServer(uint16_t port) {
   std::string server_address = absl::StrFormat("0.0.0.0:%d", port);
-  GreeterServiceImpl service;
+  CppStuffServiceImpl service;
 
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
