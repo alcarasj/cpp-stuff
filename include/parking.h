@@ -1,4 +1,5 @@
 #include <string>
+#include <exception> 
 
 class Vehicle {
   public:
@@ -10,8 +11,12 @@ class ParkingSpace {
   public:
     Vehicle* occupant;
     ParkingSpace();
-    void recordEntry(Vehicle* vehicle);
-    void recordExit();
+};
+
+class AlreadyOccupiedException : public std::exception {
+  public:
+    AlreadyOccupiedException();
+    const char* what() const throw() override;
 };
 
 class CarPark {
@@ -20,7 +25,10 @@ class CarPark {
     int capacity;
     CarPark(int capacity, std::string name);
     int getVacancies();
-    ParkingSpace* getParkingSpace(int id);
+    bool isVacant(int spaceId);
+    Vehicle* getOccupant(int spaceId);
+    void park(Vehicle* vehicle, int spaceId);
+    void unpark(int spaceId);
   private:
     ParkingSpace* spaces;
 };

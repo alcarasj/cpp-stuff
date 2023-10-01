@@ -9,14 +9,10 @@ ParkingSpace::ParkingSpace() {
   this->occupant = nullptr;
 }
 
-void ParkingSpace::recordEntry(Vehicle* vehicle) {
-  this->occupant = vehicle;
-}
+AlreadyOccupiedException::AlreadyOccupiedException() {}
 
-void ParkingSpace::recordExit() {
-  Vehicle* vehiclePtr = this->occupant;
-  delete vehiclePtr;
-  this->occupant = nullptr;
+const char* AlreadyOccupiedException::what() const throw() {
+  return "This space is already occupied!";
 }
 
 CarPark::CarPark(int capacity, std::string name) {
@@ -35,6 +31,20 @@ int CarPark::getVacancies() {
   return result;
 }
 
-ParkingSpace* CarPark::getParkingSpace(int id) {
-  return &(this->spaces[id]);
+bool CarPark::isVacant(int spaceId) {
+  return this->getOccupant(spaceId) == nullptr;
+}
+
+Vehicle* CarPark::getOccupant(int spaceId) {
+  return this->spaces[spaceId].occupant;
+}
+    
+void CarPark::park(Vehicle* vehicle, int spaceId) {
+  this->spaces[spaceId].occupant = vehicle;
+}
+
+void CarPark::unpark(int spaceId) {
+  Vehicle* vehiclePtr = this->spaces[spaceId].occupant;
+  delete vehiclePtr;
+  this->spaces[spaceId].occupant = nullptr;
 }

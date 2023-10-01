@@ -14,16 +14,17 @@ TEST(ParkingTest, TestOneCarEntryAndExit) {
   const std::string testRegNum("09-D-12345");
   Vehicle* testCar = new Vehicle(testRegNum);
   const int testSpaceId = std::rand() % testCarPark.capacity;
-  ParkingSpace* spacePtr = testCarPark.getParkingSpace(testSpaceId);
-  spacePtr->recordEntry(testCar);
+  EXPECT_TRUE(testCarPark.isVacant(testSpaceId));
+  EXPECT_EQ(nullptr, testCarPark.getOccupant(testSpaceId));
 
-  EXPECT_EQ(testRegNum, testCarPark.getParkingSpace(testSpaceId)->occupant->regNumber);
-  EXPECT_EQ(testRegNum, testCarPark.getParkingSpace(testSpaceId)->occupant->regNumber);
+  testCarPark.park(testCar, testSpaceId);
+
+  EXPECT_FALSE(testCarPark.isVacant(testSpaceId));
+  EXPECT_EQ(testRegNum, testCarPark.getOccupant(testSpaceId)->regNumber);
   EXPECT_EQ(testCapacity - 1, testCarPark.getVacancies());
   
-  spacePtr = testCarPark.getParkingSpace(testSpaceId);
-  spacePtr->recordExit();
+  testCarPark.unpark(testSpaceId);
 
-  EXPECT_EQ(nullptr, testCarPark.getParkingSpace(testSpaceId)->occupant);
+  EXPECT_EQ(nullptr, testCarPark.getOccupant(testSpaceId));
   EXPECT_EQ(testCapacity, testCarPark.getVacancies());
 }
