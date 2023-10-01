@@ -44,3 +44,9 @@
 
 bin/
 lib/
+
+*include.cmake
+*tests.cmake
+_deps/
+.vscode/
+Testing/
