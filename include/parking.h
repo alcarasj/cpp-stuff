@@ -20,6 +20,7 @@ class CarPark {
     int capacity;
     CarPark(int capacity, std::string name);
     int getVacancies();
+    ParkingSpace* getParkingSpace(int id);
   private:
     ParkingSpace* spaces;
 };

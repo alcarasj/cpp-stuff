@@ -14,6 +14,8 @@ void ParkingSpace::recordEntry(Vehicle* vehicle) {
 }
 
 void ParkingSpace::recordExit() {
+  Vehicle* vehiclePtr = this->occupant;
+  delete vehiclePtr;
   this->occupant = nullptr;
 }
 
@@ -31,4 +33,8 @@ int CarPark::getVacancies() {
     }
   }
   return result;
+}
+
+ParkingSpace* CarPark::getParkingSpace(int id) {
+  return &(this->spaces[id]);
 }
