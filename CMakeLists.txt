@@ -66,12 +66,12 @@ target_link_libraries(hw_grpc_proto
 
 add_library(
   parking 
-  ${CMAKE_SOURCE_DIR}/parking.cc
+  ${CMAKE_BINARY_DIR}/src/parking.cc
 )
-target_include_directories(parking PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(parking PUBLIC ${CMAKE_BINARY_DIR}/include)
 
 foreach(_target server client)
-  add_executable(${_target} "${_target}.cc")
+  add_executable(${_target} "${CMAKE_BINARY_DIR}/src/${_target}.cc")
   target_link_libraries(${_target}
     hw_grpc_proto
     absl::flags
@@ -94,7 +94,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(
   parking_test
-  parking_test.cc
+  "${CMAKE_BINARY_DIR}/src/parking_test.cc"
 )
 target_link_libraries(
   parking_test

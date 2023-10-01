@@ -5,7 +5,7 @@
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include <grpcpp/grpcpp.h>
-#include "./protos/cppstuff.grpc.pb.h"
+#include "../protos/cppstuff.grpc.pb.h"
 #include "parking.h"
 
 ABSL_FLAG(std::string, target, "localhost:50051", "Server address");
