@@ -9,10 +9,14 @@ ParkingSpace::ParkingSpace() {
   this->occupant = nullptr;
 }
 
-AlreadyOccupiedException::AlreadyOccupiedException() {}
+AlreadyOccupiedException::AlreadyOccupiedException(std::string carParkName, int space, Vehicle* vehicle) {
+  this->carParkName = carParkName;
+  this->spaceId = spaceId;
+  this->vehicle = vehicle;
+}
 
 const char* AlreadyOccupiedException::what() const throw() {
-  return "This space is already occupied!";
+  return std::string("Vehicle with reg number " + this->vehicle->regNumber + " tried to park at space " + std::to_string(this->spaceId) + " in \"" + this->carParkName + "\" car park but it is occupied!").c_str();
 }
 
 CarPark::CarPark(int capacity, std::string name) {
@@ -40,6 +44,9 @@ Vehicle* CarPark::getOccupant(int spaceId) {
 }
     
 void CarPark::park(Vehicle* vehicle, int spaceId) {
+  if (this->spaces[spaceId].occupant != nullptr) {
+    throw AlreadyOccupiedException(this->name, spaceId, vehicle);
+  }
   this->spaces[spaceId].occupant = vehicle;
 }
 

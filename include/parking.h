@@ -15,7 +15,10 @@ class ParkingSpace {
 
 class AlreadyOccupiedException : public std::exception {
   public:
-    AlreadyOccupiedException();
+    Vehicle* vehicle;
+    std::string carParkName;
+    int spaceId;
+    AlreadyOccupiedException(std::string carParkName, int spaceId, Vehicle* vehicle);
     const char* what() const throw() override;
 };
 
