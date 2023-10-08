@@ -27,3 +27,5 @@ gRPC C++ libraries must be installed on your machine to be able to build the pro
 ### Running unit tests
 1. Build the project as normal.
 2. Run the tests with `ctest`
+3. Debug tests with `gdb ./bin/parking_test`
+4. Set breakpoint in `gdb` with `b parking_test.cc:123`
